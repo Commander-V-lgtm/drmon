@@ -7,7 +7,13 @@ monitor and failsafe automation for your draconic reactor
 
 ### what is this
 this is a computercraft LUA script that monitors everything about a draconic reactor, with a couple features to help keep it from exploding
-NB: This is for Minecraft 1.20.1, specifically tested for ATM9. Any changes in versions before or after the 0.3.2 ATM9 launch might need changes in the code.
+NB: This is for Minecraft 1.20.1, with changes mad to fit CC mod 1.114 and AE spatial system
+
+### changes
+- Update code
+- Added new cooldown protection
+- Added new scram and AE spatial code
+- (Todo) Add wireless modem and command control
 
 
 ### tutorial -- OUTDATED
@@ -47,7 +53,7 @@ you can find a very well made youtube tutorial on how to set this up [here](http
 * Install the script using these commands in your advanced computer: 
 
 ```
-> pastebin get 3fyy7Uzr install
+> pastebin get XXXXX install
 > install
 ```
 * Modify the `startup.lua` file that was created upon running the installation script to fit your setup: set the ```outPutFluxGate``` (line 3) to the name that the game put in the chat when you started the modem on the flux gate that power will be going OUT from. Do the same on line 4 for `inputFluxGate`.
