@@ -2,16 +2,20 @@
 local reactor = "back"
 local outputFluxGate = "flow_gate_2"
 local inputFluxGate = "flow_gate_3"
+local AEPort = "spatial_port_0"
 
 local targetStrength = 30
 local maxTemperature = 8000
 local safeTemperature = 4000
 local lowestFieldPercent = 12
+local baseTemperature = 100
+local baseSatPercent = 15
+local scramFieldPercent = 5
 
 local activateOnCharged = 1
 
 -- please leave things untouched from here on
-os.loadAPI("lib/f")
+os.loadAPI("lib/f.lua")
 
 local version = "0.3"
 -- toggleable via the monitor, use our algorithm to achieve our target field strength or let the user tweak it
@@ -171,7 +175,7 @@ function update()
     end
 
     for k, v in pairs (ri) do
-      print(k.. ": ".. v)
+      print(k.. ": ".. tostring(v))
     end
     print("Output Gate: ", outputFluxGate.getSignalLowFlow())
     print("Input Gate: ", inputFluxGate.getSignalLowFlow())
@@ -306,9 +310,28 @@ function update()
       emergencyTemp = true
     end
 
+    -- cool down handler
+    if ri.status == "cooling" and ri.fieldPercentage < lowestFieldPercent then
+      local currFlow = inputFluxGate.getSignalLowFlow
+      inputFluxGate.setSignalLowFlow(900000)
+      sleep(0.1)
+      inputFluxGate.setSignalLowFlow(currFlow)
+    end
+
+    -- Base case that neglect condition
+    if ri.temperature > baseTemperature and fieldPercent < scramFieldPercent and satPercent > baseSatPercent then
+      reactor.scramReactor()
+      action = "Emergency scram, AE containment"
+      -- activate AE system by port
+      print("Activating Spatial IO...")
+      rs.setOutput(AEPort, true)
+      sleep(0.5)
+      rs.setOutput(AEPort, false)
+      print("Done.")
+    end
+
     sleep(0.05)
   end
 end
 
 parallel.waitForAny(buttons, update)
-
